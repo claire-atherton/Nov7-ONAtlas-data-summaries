@@ -43,7 +43,7 @@ A summary of the code for reference tables available to us through the NatureCou
 
 ```{r reference tables}
 BE <- meta_breeding_codes()
-BE
+head(BE)
 ```
 
 For this exercise we'll just download the BE table (the species table takes a long time to load)
@@ -65,10 +65,18 @@ So, lets put this all together to filter Black-capped Chickadee data for Souther
 Our first task will be figuring out what the species code is for Black-capped Chickadee, for this we'll need to use the `search_species_code` function if we know the 4-letter code, or we can use the `search_species` function otherwise.
 
 ```{r search species}
-search_species_code("BCCH")
+BCCH<-search_species_code("BCCH")
 ```
 
 This print-out shows us the species_id of BCCH is 14280! We'll use that in our next step of filtering BCCH data in Southern ON. Now I'll just go on Google Maps to come up with some lat/lon numbers for our filtering extent :)
+
+NOTE: I don't have access to this collection, so use Kaelyn's username. Password is CHKbu0420\*. To check what collections I have access to, use
+
+```         
+nc_requests(username = "claire.atherton")
+```
+
+My request IDs are 242362 and 249886.
 
 ```{r filter & download}
 
@@ -102,22 +110,23 @@ BCCH_BE <- BCCH_A3 %>%
 
 ```
 
-In the above code, `left_join` joins the BCCH and BE data, `by=c("breeding_rank = "rank")` lets R know that breeding rank and rank are the columns we want to join on.
-`select` is where we're narrowing down the columns we want in our output, by selecting those three columns to remain in our new dataset
+In the above code, `left_join` joins the BCCH and BE data, `by=c("breeding_rank = "rank")` lets R know that breeding rank and rank are the columns we want to join on. `select` is where we're narrowing down the columns we want in our output, by selecting those three columns to remain in our new dataset
 
 Now that we have our \~1,700 records, lets see if we can map it!
 
 ### Uploading shapefiles
 
-Lets upload our UTM Square shapefile, and then join our BCCH data to it :) 
+Lets upload our UTM Square shapefile, and then join our BCCH data to it :)
 
 1)  don't judge my file paths
 
 2)  beware that when you copy a file path the slashes are facing the wrong way
 
+NOTE: Have to be very careful about syntax. If you left join by utm_square first then you'll only get squares with BCCH in it, no empty squares.
+
 ```{r Read in utm_squares}
 
-utm_squares <- st_read("C:/Users/kbumelis/Documents/Atlas/Mapping/Atlas-3 Planning/On_Squares/On_Squares.shp")
+utm_squares <- st_read("C:/Users/catherton/Documents/Shapefiles/On_Squares/On_Squares/On_Squares.shp")
 
 BCCH_UTM <- utm_squares %>%
   left_join(BCCH_BE, by = c("SQUARE_ID" = "utm_square"))
@@ -126,7 +135,7 @@ BCCH_UTM <- utm_squares %>%
 
 ### Lets map!
 
-First lets set out bounding box of the map to be the same as what we pulled the data for, and get the Open Street Map for it  
+First lets set out bounding box of the map to be the same as what we pulled the data for, and get the Open Street Map for it
 
 ```{r Lets Map!}
 
