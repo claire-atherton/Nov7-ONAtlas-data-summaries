@@ -106,8 +106,6 @@ BCCH_BE <- BCCH_A3 %>%
   left_join(BE, by = c("breeding_rank" = "rank")) %>%
   select(utm_square, breeding_code, category)
 
-
-
 ```
 
 In the above code, `left_join` joins the BCCH and BE data, `by=c("breeding_rank = "rank")` lets R know that breeding rank and rank are the columns we want to join on. `select` is where we're narrowing down the columns we want in our output, by selecting those three columns to remain in our new dataset
@@ -133,6 +131,10 @@ BCCH_UTM <- utm_squares %>%
 
 ```
 
+Left join and Merge functions are the same, except with left join you need to be more careful about syntax.
+
+`BCCH_UTM <- merge(x=BCCH_BE,y=utm_squares,by.x="utm_square", by.y="SQUARE_ID", all.y=TRUE)`
+
 ### Lets map!
 
 First lets set out bounding box of the map to be the same as what we pulled the data for, and get the Open Street Map for it
@@ -147,13 +149,3 @@ leaflet(data = BCCH_UTM) %>%
   addLegend("bottomright", pal = pal, values = ~category, title = "Category") 
 
 ```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
